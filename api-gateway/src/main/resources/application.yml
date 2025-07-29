@@ -24,7 +24,7 @@ eureka:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
-idendity:
+identity:
   secret-key: "Z+2hXkMTIW+S3IlblVk48SRQgy31QhFu25BP84SNlSU="
 
 

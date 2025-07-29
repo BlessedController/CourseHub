@@ -25,7 +25,7 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     private final JwtDecoder jwtDecoder;
 
-    public JwtAuthenticationFilter(@Value("${idendity.secret-key}") String SECRET_KEY) {
+    public JwtAuthenticationFilter(@Value("${identity.secret-key}") String SECRET_KEY) {
         SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
         this.jwtDecoder = NimbusJwtDecoder.withSecretKey(secretKey).build();
     }

@@ -1,10 +1,13 @@
 package com.coursehub.media_stock_service.service;
 
+import com.coursehub.media_stock_service.client.CourseServiceClient;
 import com.coursehub.media_stock_service.dto.request.AddVideoToCourseRequest;
+import com.coursehub.media_stock_service.exception.AuthorIsNotTheOwnerOfTheCourseOrIsNotAdminException;
 import com.coursehub.media_stock_service.exception.InvalidFileFormatException;
 import com.coursehub.media_stock_service.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,13 +23,15 @@ public class VideoService {
 
     private final VideoStorageService videoStorageService;
     private final JwtUtil jwtUtil;
-    private final RabbitTemplate rabbitTemplate;
+    private final AmqpTemplate rabbitTemplate;
     private final Logger logger = LoggerFactory.getLogger(VideoService.class);
+    private final CourseServiceClient courseServiceClient;
 
-    public VideoService(VideoStorageService videoStorageService, JwtUtil jwtUtil, RabbitTemplate rabbitTemplate) {
+    public VideoService(VideoStorageService videoStorageService, JwtUtil jwtUtil, AmqpTemplate rabbitTemplate, CourseServiceClient courseServiceClient) {
         this.videoStorageService = videoStorageService;
         this.jwtUtil = jwtUtil;
         this.rabbitTemplate = rabbitTemplate;
+        this.courseServiceClient = courseServiceClient;
     }
 
     public void uploadVideoFile(MultipartFile file,
@@ -48,11 +53,19 @@ public class VideoService {
                 File.separator + instructorName +
                 File.separator + courseId;
 
-        String filename = videoStorageService.storeVideo(file, subFolder);
+        Boolean isValid = courseServiceClient.isUserOwnerOfCourse(courseId, token).getBody();
 
-        AddVideoToCourseRequest request = new AddVideoToCourseRequest(filename, displayName, courseId, token);
+        if (isValid != null && isValid) {
+            String filename = videoStorageService.storeVideo(file, subFolder);
 
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, ADD_VIDEO_ROUTING_KEY, request);
+            AddVideoToCourseRequest request = new AddVideoToCourseRequest(filename, displayName, courseId, token);
+
+            rabbitTemplate.convertAndSend(EXCHANGE_NAME, ADD_VIDEO_ROUTING_KEY, request);
+        } else {
+            throw new AuthorIsNotTheOwnerOfTheCourseOrIsNotAdminException(
+                    "You are neither the course owner nor an admin"
+            );
+        }
 
     }
 

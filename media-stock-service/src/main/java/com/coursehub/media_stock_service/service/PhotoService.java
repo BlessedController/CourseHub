@@ -5,6 +5,7 @@ import com.coursehub.media_stock_service.exception.InvalidFileFormatException;
 import com.coursehub.media_stock_service.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,10 +18,10 @@ import static com.coursehub.media_stock_service.util.MediaValidator.validateProp
 public class PhotoService {
     private final PhotoStorageService photoStorageService;
     private final JwtUtil jwtUtil;
-    private final RabbitTemplate rabbitTemplate;
+    private final AmqpTemplate rabbitTemplate;
     private final Logger logger = LoggerFactory.getLogger(PhotoService.class);
 
-    public PhotoService(PhotoStorageService photoStorageService, JwtUtil jwtUtil, RabbitTemplate rabbitTemplate) {
+    public PhotoService(PhotoStorageService photoStorageService, JwtUtil jwtUtil, AmqpTemplate rabbitTemplate) {
         this.photoStorageService = photoStorageService;
         this.jwtUtil = jwtUtil;
         this.rabbitTemplate = rabbitTemplate;

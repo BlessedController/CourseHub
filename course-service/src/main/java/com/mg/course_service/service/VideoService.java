@@ -29,7 +29,6 @@ public class VideoService {
         this.courseService = courseService;
     }
 
-    //TODO: HAVE TO TRY
     @Transactional
     @RabbitListener(queues = ADD_VIDEO_QUEUE)
     public void addVideoToCourse(AddVideoToCourseRequest request) {
@@ -43,7 +42,7 @@ public class VideoService {
 
     @RabbitListener(queues = DELETE_VIDEO_QUEUE)
     public void deleteVideoFromCourse(String filename) {
-        logger.info("Video silme mesajı alındı: {}", filename);
+        logger.info("Video delete message has received. filename: {}", filename);
 
         Video video = videoRepository.getVideoByFilename(filename).orElseThrow(() ->
                 new VideoNotFoundException("Video not found"));

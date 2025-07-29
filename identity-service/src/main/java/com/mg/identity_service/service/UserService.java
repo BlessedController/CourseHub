@@ -55,11 +55,6 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found by Id: " + id));
     }
 
-    protected User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found by username: " + username));
-    }
-
     protected void authorizeSelfOrAdmin(UUID targetUserId, String token) {
         UUID currentUserId = jwtUtil.getUserIdFromToken(token);
         if (!jwtUtil.isAdmin(token) && !Objects.equals(currentUserId, targetUserId)) {

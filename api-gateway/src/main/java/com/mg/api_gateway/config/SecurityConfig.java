@@ -75,7 +75,7 @@ public class SecurityConfig {
                             String body = """
                                     {
                                       "error": "Unauthorized",
-                                      "message": "Önce kayt olun"
+                                      "message": "Please Login First"
                                     }""";
                             byte[] bytes = body.getBytes();
                             return exchange.getResponse().writeWith(
@@ -87,7 +87,7 @@ public class SecurityConfig {
                             String body = """
                                     {
                                       "error": "Forbidden",
-                                      "message": "Bu kaynağa erişim yetkiniz yok."
+                                      "message": "You have no right to access this resource."
                                     }""";
                             byte[] bytes = body.getBytes();
                             return exchange.getResponse().writeWith(

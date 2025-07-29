@@ -66,4 +66,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(AuthorIsNotTheOwnerOfTheCourseOrIsNotAdminException.class)
+    public ResponseEntity<?> authorIsNotTheOwnerOfTheCourseOrIsNotAdminExceptionHandler(
+            AuthorIsNotTheOwnerOfTheCourseOrIsNotAdminException exception,
+            HttpServletRequest request) {
+        Map<String, Object> body = createBody(
+                HttpStatus.UNAUTHORIZED,
+                exception.getMessage(),
+                request.getRequestURI());
+
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
 }

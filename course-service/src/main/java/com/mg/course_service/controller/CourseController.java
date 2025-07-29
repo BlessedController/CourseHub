@@ -1,6 +1,5 @@
 package com.mg.course_service.controller;
 
-import com.mg.course_service.dto.VideoDTO;
 import com.mg.course_service.dto.request.course.CreateCourseRequest;
 import com.mg.course_service.dto.request.course.UpdateCourseRequest;
 import com.mg.course_service.dto.response.CourseResponse;
@@ -68,6 +67,13 @@ public class CourseController {
         List<CourseResponse> courses = courseService.getUserCourses(token);
 
         return ResponseEntity.status(HttpStatus.OK).body(courses);
+    }
+
+    @GetMapping("/validate-owner")
+    ResponseEntity<Boolean> isUserOwnerOfCourse(@RequestParam UUID courseId,
+                                                @RequestHeader("Authorization") String token) {
+        Boolean isOwner = courseService.isUserOwnerOfCourse(courseId, token);
+        return ResponseEntity.ok(isOwner);
     }
 
 }

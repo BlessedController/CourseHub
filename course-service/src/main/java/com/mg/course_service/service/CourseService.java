@@ -2,7 +2,6 @@ package com.mg.course_service.service;
 
 import com.mg.course_service.client.IdentityServiceClient;
 
-import com.mg.course_service.dto.VideoDTO;
 import com.mg.course_service.dto.request.course.CreateCourseRequest;
 import com.mg.course_service.dto.request.course.UpdateCourseRequest;
 import com.mg.course_service.dto.response.CourseResponse;
@@ -132,5 +131,14 @@ public class CourseService {
                 .map(this::getCourseResponse)
                 .toList();
 
+    }
+
+    public Boolean isUserOwnerOfCourse(UUID courseId, String token) {
+        Course course = findCourseById(courseId);
+        UUID userId = JwtUtil.getUserIdFromToken(token);
+        UUID instructorId = course.getInstructorId();
+        boolean isAdmin = JwtUtil.isAdmin(token);
+
+        return isAdmin || Objects.equals(userId, instructorId);
     }
 }

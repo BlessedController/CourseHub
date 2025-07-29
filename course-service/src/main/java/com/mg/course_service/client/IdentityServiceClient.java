@@ -28,15 +28,12 @@ public interface IdentityServiceClient {
 
         return ResponseEntity.ok(new UserInfoResponse(
                 UUID.randomUUID(),
-                "Random Username",
+                "Service Unavailable",
                 "Service Unavailable",
                 "Identity service is currently unreachable.",
                 "Please try again later.",
                 null,
                 null
         ));
-
     }
-
-
 }
