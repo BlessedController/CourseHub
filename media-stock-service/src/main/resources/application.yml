@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: media-stock-service
+  servlet:
+    multipart:
+      max-file-size: 40MB
+      max-request-size: 40MB
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+base:
+  storage:
+    location: D:\MAHABBAT_GOZALOV\MY_JAVA_PROJECTS\CourseHub\media-stock-service\uploads
+
+server:
+  port: 0
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+    prefer-ip-address: true

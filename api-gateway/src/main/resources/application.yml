@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+
+server:
+  port: 8081
+eureka:
+  client:
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    fetch-registry: true
+    registry-fetch-interval-seconds: 1
+
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+idendity:
+  secret-key: "Z+2hXkMTIW+S3IlblVk48SRQgy31QhFu25BP84SNlSU="
+
+
+

@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1521/orclpdb1
+    username: IDENTITY_SERVICE_DB
+    password: dbhunter
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    database-platform: org.hibernate.dialect.OracleDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  application:
+    name: identity-service
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+server:
+  port: 0
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+    prefer-ip-address: true
+
+services:
+  identity:
+    secret-key: Z+2hXkMTIW+S3IlblVk48SRQgy31QhFu25BP84SNlSU=
+
+
