@@ -3,7 +3,6 @@ package com.mg.identity_service.service;
 import com.mg.identity_service.dto.requests.LoginRequest;
 import com.mg.identity_service.dto.requests.*;
 import com.mg.identity_service.dto.responses.ProfilePhotoResponse;
-import com.mg.identity_service.dto.responses.UserInfoResponse;
 import com.mg.identity_service.dto.responses.UserResponse;
 import com.mg.identity_service.exception.DuplicateFieldException;
 import com.mg.identity_service.exception.SelfOrAdminOnlyException;
@@ -156,11 +155,10 @@ public class UserService {
         userRepository.deleteById(targetUserId);
     }
 
-    public UserResponse getUserById(UUID targetUserId, String token) {
-        authorizeSelfOrAdmin(targetUserId, token);
+    public UserResponse getUserById(UUID targetUserId) {
         User user = findById(targetUserId);
 
-        return UserResponse.convert(user);
+        return UserResponse.convertToDTO(user);
     }
 
     public List<UserResponse> getAllUsers() {
@@ -169,7 +167,7 @@ public class UserService {
 
         return users
                 .stream()
-                .map(UserResponse::convert)
+                .map(UserResponse::convertToDTO)
                 .toList();
     }
 
@@ -184,24 +182,16 @@ public class UserService {
         return jwtService.generateToken(request);
     }
 
-    public UserInfoResponse getUserInfoById(@NotNull UUID id) {
+    public UserResponse getUserInfoById(@NotNull UUID id) {
         User user = findById(id);
 
-        return new UserInfoResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getOverview(),
-                user.getdescription()
-        );
+        return UserResponse.convertToDTO(user);
     }
 
     public UserResponse getSelfByToken(String token) {
         UUID userId = jwtUtil.getUserIdFromToken(token);
         User user = findById(userId);
-        return UserResponse.convert(user);
+        return UserResponse.convertToDTO(user);
     }
 
     @Transactional

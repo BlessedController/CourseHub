@@ -20,7 +20,7 @@ public record UserResponse(
         Gender gender,
         Role role
 ) {
-    public static UserResponse convert(User user) {
+    public static UserResponse convertToDTO(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),

@@ -10,7 +10,7 @@ public record CourseResponse(
         UUID id,
         String title,
         String description,
-        UserInfoResponse instructor,
+        UserResponse instructor,
         Double price,
         List<CategoryDTO> categories,
         List<VideoDTO> courseVideos

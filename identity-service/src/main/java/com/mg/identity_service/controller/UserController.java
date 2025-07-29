@@ -2,7 +2,6 @@ package com.mg.identity_service.controller;
 
 import com.mg.identity_service.dto.requests.LoginRequest;
 import com.mg.identity_service.dto.requests.*;
-import com.mg.identity_service.dto.responses.UserInfoResponse;
 import com.mg.identity_service.dto.responses.UserResponse;
 import com.mg.identity_service.service.UserService;
 import jakarta.servlet.http.HttpServletResponse; // Eğer cookie kullanmayacaksanız kaldırabilirsiniz
@@ -45,15 +44,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@NotNull @PathVariable UUID id,
-                                                    @RequestHeader("Authorization") String token) {
-        return ResponseEntity.ok(userService.getUserById(id, token));
-    }
-
-    @GetMapping("/info/{id}")
-    ResponseEntity<UserInfoResponse> getUserInfoById(@NotNull @PathVariable UUID id) {
-        UserInfoResponse infoResponse = userService.getUserInfoById(id);
-        return ResponseEntity.ok(infoResponse);
+    public ResponseEntity<UserResponse> getUserById(@NotNull @PathVariable UUID id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @GetMapping("/self")

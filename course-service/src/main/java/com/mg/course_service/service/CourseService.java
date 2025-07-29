@@ -5,7 +5,7 @@ import com.mg.course_service.client.IdentityServiceClient;
 import com.mg.course_service.dto.request.course.CreateCourseRequest;
 import com.mg.course_service.dto.request.course.UpdateCourseRequest;
 import com.mg.course_service.dto.response.CourseResponse;
-import com.mg.course_service.dto.response.UserInfoResponse;
+import com.mg.course_service.dto.response.UserResponse;
 import com.mg.course_service.exception.*;
 import com.mg.course_service.mapper.UpdateCourseRequestConverter;
 import com.mg.course_service.mapper.VideoDTOConverter;
@@ -55,8 +55,8 @@ public class CourseService {
         );
     }
 
-    protected UserInfoResponse findUserInfoById(Course course) {
-        return identityServiceClient.getUserInfoById(course.getInstructorId()).getBody();
+    protected UserResponse findUserInfoById(Course course) {
+        return identityServiceClient.getUserById(course.getInstructorId()).getBody();
     }
 
 

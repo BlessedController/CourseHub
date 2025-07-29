@@ -1,6 +1,6 @@
 package com.mg.course_service.client;
 
-import com.mg.course_service.dto.response.UserInfoResponse;
+import com.mg.course_service.dto.response.UserResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -19,19 +19,21 @@ public interface IdentityServiceClient {
 
     Logger logger = LoggerFactory.getLogger(IdentityServiceClient.class);
 
-    @GetMapping("/info/{id}")
+    @GetMapping("/{id}")
     @CircuitBreaker(name = "getUserInfoByIdCircuitBreaker", fallbackMethod = "getUserInfoByIdFallBack")
-    ResponseEntity<UserInfoResponse> getUserInfoById(@NotNull @PathVariable UUID id);
+    ResponseEntity<UserResponse> getUserById(@NotNull @PathVariable UUID id);
 
-    default ResponseEntity<UserInfoResponse> getUserInfoByIdFallBack(UUID id, Throwable throwable) {
+    default ResponseEntity<UserResponse> getUserInfoByIdFallBack(UUID id, Throwable throwable) {
         logger.warn("Fallback triggered for getUserInfoById. User ID: {}, Reason: {}", id, throwable.getMessage());
 
-        return ResponseEntity.ok(new UserInfoResponse(
-                UUID.randomUUID(),
-                "Service Unavailable",
-                "Service Unavailable",
-                "Identity service is currently unreachable.",
-                "Please try again later.",
+        return ResponseEntity.ok(new UserResponse(
+                null,
+                "Author info is currently unreachable.",
+                null,
+                null,
+                null,
+                null,
+                null,
                 null,
                 null
         ));
