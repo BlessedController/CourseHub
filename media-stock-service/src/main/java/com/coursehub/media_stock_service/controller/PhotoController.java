@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.coursehub.media_stock_service.constants.PhotoApiUrls.*;
+
 @RestController
-@RequestMapping("/v1/media/photo")
+@RequestMapping(PHOTO_API_BASE_URL)
 public class PhotoController {
     private final PhotoService photoService;
 
@@ -15,7 +17,7 @@ public class PhotoController {
         this.photoService = photoService;
     }
 
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = UPLOAD_PROFILE_PHOTO_URL, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> uploadPhotoFile(@RequestParam("file") MultipartFile file,
                                                 @RequestHeader("Authorization") String token) {
 
@@ -24,7 +26,7 @@ public class PhotoController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delete-profile-photo")
+    @DeleteMapping(DELETE_PROFILE_PHOTO_URL)
     public ResponseEntity<Void> deletePhoto(@RequestHeader("Authorization") String token) {
         photoService.deletePhoto(token);
         return ResponseEntity.noContent().build();

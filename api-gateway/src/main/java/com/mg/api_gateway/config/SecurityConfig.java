@@ -15,7 +15,8 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
-import java.util.List;
+
+import static com.mg.api_gateway.constant.ServiceUrlsForSecurity.*;
 
 
 @Configuration
@@ -52,20 +53,19 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(
-                                "/v1/user/login",
-                                "/v1/user/register",
-                                "/v1/client/**",
-                                "/v1/course/all-courses",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/webjars/**"
+                                USER_LOGIN_URL,
+                                USER_REGISTER_URL,
+                                COURSE_API_ALL_COURSES,
+                                SWAGGER_UI_URL,
+                                SWAGGER_API_DOCS_URL,
+                                SWAGGER_WEB_JARS_URL
                         ).permitAll()
-                        .pathMatchers("/v1/course/author/**").hasAnyRole("ADMIN", "AUTHOR")
-                        .pathMatchers("/v1/video/author/**").hasAnyRole("ADMIN", "AUTHOR")
-                        .pathMatchers("/v1/media/**").hasAnyRole("ADMIN", "AUTHOR")
-                        .pathMatchers("/v1/user/admin/**").hasRole("ADMIN")
-                        .pathMatchers("/v1/user/**").authenticated()
-                        .pathMatchers("/v1/course/**").authenticated()
+                        .pathMatchers(COURSE_API_AUTHOR_URLS).hasAnyRole("ADMIN", "AUTHOR")
+                        .pathMatchers(VIDEO_API_AUTHOR_URLS).hasAnyRole("ADMIN", "AUTHOR")
+                        .pathMatchers(MEDIA_URL).hasAnyRole("ADMIN", "AUTHOR")
+                        .pathMatchers(USER_ADMIN_URLS).hasRole("ADMIN")
+                        .pathMatchers(USER_USER_URLS).authenticated()
+                        .pathMatchers(COURSE_USER_URLS).authenticated()
                         .anyExchange().denyAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)

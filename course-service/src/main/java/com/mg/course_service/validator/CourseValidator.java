@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.mg.course_service.constant.Constants.MAX_CATEGORIES;
-
 public class CourseValidator {
+
+    public static final int MAX_CATEGORIES = 3;
 
     public static void validateInstructorItSelfOrAdmin(Course course, String token) {
         UUID userId = JwtUtil.getUserIdFromToken(token);

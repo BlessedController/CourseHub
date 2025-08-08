@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Table(name = "courses")
+@Table(name = "COURSES")
 public class Course {
 
     @Id
@@ -58,27 +58,9 @@ public class Course {
         this.updatedAt = LocalDateTime.now();
     }
 
-    //region Constructors
 
     public Course() {
     }
-
-    public Course(String title,
-                  String description,
-                  UUID instructorId,
-                  Double price,
-                  Boolean isPublished,
-                  Set<Category> categories) {
-        this.title = title;
-        this.description = description;
-        this.instructorId = instructorId;
-        this.price = price;
-        this.isPublished = isPublished;
-        this.categories = categories;
-    }
-
-
-    //endregion
 
     //region Getters and Setters
 
@@ -134,16 +116,8 @@ public class Course {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public Set<Category> getCategories() {
@@ -154,10 +128,6 @@ public class Course {
         this.categories = categories;
     }
 
-    public Boolean getPublished() {
-        return isPublished;
-    }
-
     public List<Video> getCourseVideos() {
         return courseVideos;
     }
@@ -166,6 +136,55 @@ public class Course {
         this.courseVideos = courseVideos;
     }
 
-//endregion
+    //endregion
 
+    public static class Builder {
+        private String title;
+        private String description;
+        private UUID instructorId;
+        private Double price;
+        private Boolean isPublished = false;
+        private Set<Category> categories = new HashSet<>();
+
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder instructorId(UUID instructorId) {
+            this.instructorId = instructorId;
+            return this;
+        }
+
+        public Builder price(Double price) {
+            this.price = price;
+            return this;
+        }
+
+        public Builder isPublished(Boolean isPublished) {
+            this.isPublished = isPublished;
+            return this;
+        }
+
+        public Builder categories(Set<Category> categories) {
+            this.categories = categories;
+            return this;
+        }
+
+        public Course build() {
+            Course course = new Course();
+            course.setTitle(this.title);
+            course.setDescription(this.description);
+            course.setInstructorId(this.instructorId);
+            course.setPrice(this.price);
+            course.setPublished(this.isPublished);
+            course.setCategories(this.categories);
+            return course;
+        }
+    }
 }

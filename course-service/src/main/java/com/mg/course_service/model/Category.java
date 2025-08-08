@@ -1,7 +1,7 @@
 package com.mg.course_service.model;
 
-import com.mg.course_service.model.enums.CategoryEnum;
-import com.mg.course_service.model.enums.MainCategoryEnum;
+import com.mg.course_service.enums.CategoryEnum;
+import com.mg.course_service.enums.MainCategoryEnum;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

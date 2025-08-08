@@ -30,6 +30,3 @@ eureka:
     instance-id: ${spring.application.name}:${random.value}
     prefer-ip-address: true
 
-course:
-  secret:
-    key: MmI0Njc2ZmQtNmNjMy00NjgxLTg4NWEtOGFhM2IxMzJjYWJk

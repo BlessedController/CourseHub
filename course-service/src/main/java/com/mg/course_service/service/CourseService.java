@@ -14,11 +14,14 @@ import com.mg.course_service.repository.CourseRepository;
 import com.mg.course_service.mapper.CategoryDTOConverter;
 import com.mg.course_service.util.JwtUtil;
 import jakarta.transaction.Transactional;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.mg.course_service.config.RabbitMQConfig.*;
 import static com.mg.course_service.validator.CourseValidator.*;
 
 @Service
@@ -26,11 +29,16 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final IdentityServiceClient identityServiceClient;
+    private final AmqpTemplate rabbitTemplate;
+    private final JwtUtil jwtUtil;
 
     public CourseService(CourseRepository courseRepository,
-                         IdentityServiceClient identityServiceClient) {
+                         IdentityServiceClient identityServiceClient,
+                         AmqpTemplate rabbitTemplate, JwtUtil jwtUtil) {
         this.courseRepository = courseRepository;
         this.identityServiceClient = identityServiceClient;
+        this.rabbitTemplate = rabbitTemplate;
+        this.jwtUtil = jwtUtil;
     }
 
     protected Course findCourseById(UUID id) {
@@ -43,7 +51,7 @@ public class CourseService {
                 course.getId(),
                 course.getTitle(),
                 course.getDescription(),
-                findUserInfoById(course),
+                findUserById(course),
                 course.getPrice(),
                 course.getCategories()
                         .stream()
@@ -55,7 +63,7 @@ public class CourseService {
         );
     }
 
-    protected UserResponse findUserInfoById(Course course) {
+    protected UserResponse findUserById(Course course) {
         return identityServiceClient.getUserById(course.getInstructorId()).getBody();
     }
 
@@ -66,21 +74,25 @@ public class CourseService {
         validationCourseCategoriesSize(request.categories());
         validateCategories(request.categories());
 
-        UUID instructorId = JwtUtil.getUserIdFromToken(token);
+        UUID instructorId = jwtUtil.getUserIdFromToken(token);
 
-        Course course = new Course(
-                request.title(),
-                request.description(),
-                instructorId,
-                request.price(),
-                request.isPublished(),
-                request.categories()
-                        .stream()
+
+        Course course = new Course.Builder()
+                .title(request.title())
+                .description(request.description())
+                .instructorId(instructorId)
+                .price(request.price())
+                .isPublished(request.isPublished())
+                .categories(request.categories().stream()
                         .map(CategoryDTOConverter::toEntity)
-                        .collect(Collectors.toSet())
-        );
+                        .collect(Collectors.toSet()))
+                .build();
+
 
         courseRepository.save(course);
+
+
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, UPDATE_ROLE_ROUTING_KEY, instructorId);
 
         return course.getId();
     }
@@ -118,8 +130,8 @@ public class CourseService {
     }
 
 
-    public List<CourseResponse> getUserCourses(String token) {
-        UUID instructorId = JwtUtil.getUserIdFromToken(token);
+    public List<CourseResponse> getAuthorCourses(String token) {
+        UUID instructorId = jwtUtil.getUserIdFromToken(token);
 
         List<Course> courses = courseRepository.getCoursesByInstructorId(instructorId).orElseThrow(
                 () -> new CourseNotFoundException(
@@ -135,9 +147,9 @@ public class CourseService {
 
     public Boolean isUserOwnerOfCourse(UUID courseId, String token) {
         Course course = findCourseById(courseId);
-        UUID userId = JwtUtil.getUserIdFromToken(token);
+        UUID userId = jwtUtil.getUserIdFromToken(token);
         UUID instructorId = course.getInstructorId();
-        boolean isAdmin = JwtUtil.isAdmin(token);
+        boolean isAdmin = jwtUtil.isAdmin(token);
 
         return isAdmin || Objects.equals(userId, instructorId);
     }

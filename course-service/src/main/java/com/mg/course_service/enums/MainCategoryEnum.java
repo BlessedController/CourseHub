@@ -1,4 +1,4 @@
-package com.mg.course_service.model.enums;
+package com.mg.course_service.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

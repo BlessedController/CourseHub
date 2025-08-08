@@ -44,7 +44,7 @@ public class JwtUtil {
         return claims;
     }
 
-    public UUID getUserIdFromToken(String token) {
+    public  UUID getUserIdFromToken(String token) {
 
         Map<String, Object> claims = getClaimsFromToken(token);
 

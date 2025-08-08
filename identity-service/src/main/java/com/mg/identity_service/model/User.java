@@ -59,57 +59,10 @@ public class User implements UserDetails {
 
     //endregion
 
-    //region Constructors
 
     public User() {
     }
 
-    public User(String username,
-                String password,
-                String phoneNumber,
-                String email,
-                String firstName,
-                String lastName,
-                Gender gender,
-                Role role
-    ) {
-        this.username = username;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.gender = gender;
-        this.role = role;
-    }
-
-    public User(String username,
-                String password,
-                String phoneNumber,
-                String email,
-                String firstName,
-                String lastName,
-                LocalDate birthDate,
-                String overview,
-                String description,
-                Gender gender,
-                Role role
-    ) {
-        this.username = username;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.birthDate = birthDate;
-        this.overview = overview;
-        this.description = description;
-        this.gender = gender;
-        this.role = role;
-    }
-
-
-    //endregion
 
     //region Getters and Setters
 
@@ -277,6 +230,118 @@ public class User implements UserDetails {
                 "  gender=" + gender + ",\n" +
                 "  role=" + role + "\n" +
                 '}';
+    }
+
+
+    public static class Builder {
+        private UUID id;
+
+        private String username;
+
+        private String password;
+
+        private String phoneNumber;
+
+        private String email;
+
+        private String firstName;
+
+        private String lastName;
+
+        private LocalDate birthDate;
+
+        private String overview;
+
+        private String description;
+
+        private Gender gender;
+
+        private Role role;
+
+        String profilePhotoName;
+
+        public Builder id(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder phoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder firstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public Builder lastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+
+        public Builder birthDate(LocalDate birthDate) {
+            this.birthDate = birthDate;
+            return this;
+        }
+
+        public Builder overview(String overview) {
+            this.overview = overview;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder gender(Gender gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public Builder role(Role role) {
+            this.role = role;
+            return this;
+        }
+
+        public Builder profilePhotoName(String profilePhotoName) {
+            this.profilePhotoName = profilePhotoName;
+            return this;
+        }
+
+        public User build() {
+            User user = new User();
+            user.setId(id);
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setPhoneNumber(phoneNumber);
+            user.setEmail(email);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setBirthDate(birthDate);
+            user.setOverview(overview);
+            user.setDescription(description);
+            user.setGender(gender);
+            user.setRole(role);
+            user.setProfilePhotoName(profilePhotoName);
+            return user;
+        }
     }
 
 }

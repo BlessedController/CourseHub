@@ -12,7 +12,6 @@ import com.mg.identity_service.model.User;
 import com.mg.identity_service.repository.UserRepository;
 import com.mg.identity_service.util.JwtUtil;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -25,8 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.mg.identity_service.config.RabbitMQConfig.ADD_PHOTO_QUEUE;
-import static com.mg.identity_service.config.RabbitMQConfig.DELETE_PHOTO_QUEUE;
+import static com.mg.identity_service.config.RabbitMQConfig.*;
 
 
 @Service
@@ -75,17 +73,18 @@ public class UserService {
             throw new DuplicateFieldException("PhoneNumber is already exist.");
         }
 
-
-        User user = new User(
-                request.username(),
-                passwordEncoder.encode(request.password()),
-                request.phoneNumber(),
-                request.email(),
-                request.firstName(),
-                request.lastName(),
-                request.gender(),
-                Role.ROLE_USER
-        );
+        User user = new User.Builder()
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
+                .phoneNumber(request.phoneNumber())
+                .email(request.email())
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .gender(request.gender())
+                .overview(request.overview())
+                .description(request.description())
+                .role(Role.ROLE_USER)
+                .build();
 
         userRepository.save(user);
     }
@@ -150,6 +149,20 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    @RabbitListener(queues = UPDATE_ROLE_QUEUE)
+    public void changeRoleToAuthor(UUID userId) {
+        try {
+            User user = findById(userId);
+            user.setRole(Role.ROLE_AUTHOR);
+            userRepository.save(user);
+        } catch (UserNotFoundException exception) {
+            logger.error(exception.getMessage());
+        } catch (Exception exception) {
+            logger.error("Unexpected error", exception);
+        }
+    }
+
     public void deleteUserById(UUID targetUserId, String token) {
         authorizeSelfOrAdmin(targetUserId, token);
         userRepository.deleteById(targetUserId);
@@ -180,12 +193,6 @@ public class UserService {
         authenticationProvider.authenticate(auth);
 
         return jwtService.generateToken(request);
-    }
-
-    public UserResponse getUserInfoById(@NotNull UUID id) {
-        User user = findById(id);
-
-        return UserResponse.convertToDTO(user);
     }
 
     public UserResponse getSelfByToken(String token) {

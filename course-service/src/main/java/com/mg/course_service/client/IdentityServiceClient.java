@@ -35,6 +35,8 @@ public interface IdentityServiceClient {
                 null,
                 null,
                 null,
+                null,
+                null,
                 null
         ));
     }

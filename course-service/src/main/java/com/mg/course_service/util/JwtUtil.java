@@ -15,10 +15,14 @@ import java.util.UUID;
 @Component
 public class JwtUtil {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
+
+    public JwtUtil(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
 
     //TODO: WHY IT WORKS WITHOUT SUBSTRING BEARER
-    protected static Map<String, Object> getClaimsFromToken(String token) {
+    protected Map<String, Object> getClaimsFromToken(String token) {
         String[] tokenParts = token.split("\\.");
 
         if (tokenParts.length < 2) {
@@ -42,7 +46,7 @@ public class JwtUtil {
         return claims;
     }
 
-    public static UUID getUserIdFromToken(String token) {
+    public UUID getUserIdFromToken(String token) {
 
         Map<String, Object> claims = getClaimsFromToken(token);
 
@@ -56,7 +60,7 @@ public class JwtUtil {
 
     }
 
-    public static String getUsernameFromToken(String token) {
+    public String getUsernameFromToken(String token) {
 
         Map<String, Object> claims = getClaimsFromToken(token);
 
@@ -69,7 +73,7 @@ public class JwtUtil {
         return username;
     }
 
-    public static boolean isAdmin(String token) {
+    public boolean isAdmin(String token) {
         Map<String, Object> claims = getClaimsFromToken(token);
 
         Object role = claims.get("scope");

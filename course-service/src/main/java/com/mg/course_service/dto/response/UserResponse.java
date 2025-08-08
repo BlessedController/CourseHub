@@ -1,5 +1,8 @@
 package com.mg.course_service.dto.response;
 
+import com.mg.course_service.enums.Gender;
+import com.mg.course_service.enums.Role;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -12,5 +15,8 @@ public record UserResponse(
         String lastName,
         LocalDate birthDate,
         String overview,
-        String description) {
+        String description,
+        Gender gender,
+        Role role
+) {
 }

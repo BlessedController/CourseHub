@@ -11,8 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
+import static com.coursehub.media_stock_service.constants.VideoApiUrls.*;
+
 @RestController
-@RequestMapping("v1/media/video")
+@RequestMapping(VIDEO_API_BASE_URL)
 public class VideoController {
 
     private final VideoService videoService;
@@ -24,7 +26,7 @@ public class VideoController {
     }
 
 
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = UPLOAD_VIDEO_URL, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> uploadVideoFile(@RequestParam("file") MultipartFile file,
                                                 @RequestHeader("Authorization") String token,
                                                 @RequestParam("courseId") UUID courseId,
@@ -36,7 +38,7 @@ public class VideoController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/stream/{filename}")
+    @GetMapping(STREAM_VIDEO_URL)
     public ResponseEntity<Resource> streamVideo(
             @PathVariable String filename,
             @RequestHeader(value = "Range", required = false) String rangeHeader,
@@ -54,7 +56,7 @@ public class VideoController {
                 .body(response.resource());
     }
 
-    @DeleteMapping("/delete/{courseId}/{filename}")
+    @DeleteMapping(DELETE_VIDEO_URL)
     public ResponseEntity<Void> deleteVideo(@RequestHeader("Authorization") String token,
                                             @PathVariable UUID courseId,
                                             @PathVariable String filename) {
