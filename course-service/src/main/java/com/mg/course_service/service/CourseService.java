@@ -7,22 +7,21 @@ import com.mg.course_service.dto.request.course.UpdateCourseRequest;
 import com.mg.course_service.dto.response.CourseResponse;
 import com.mg.course_service.dto.response.UserResponse;
 import com.mg.course_service.exception.*;
-import com.mg.course_service.mapper.UpdateCourseRequestConverter;
 import com.mg.course_service.mapper.VideoDTOConverter;
+import com.mg.course_service.model.Category;
 import com.mg.course_service.model.Course;
 import com.mg.course_service.repository.CourseRepository;
 import com.mg.course_service.mapper.CategoryDTOConverter;
 import com.mg.course_service.util.JwtUtil;
+import com.mg.course_service.validator.CourseValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.mg.course_service.config.RabbitMQConfig.*;
-import static com.mg.course_service.validator.CourseValidator.*;
 
 @Service
 public class CourseService {
@@ -31,14 +30,17 @@ public class CourseService {
     private final IdentityServiceClient identityServiceClient;
     private final AmqpTemplate rabbitTemplate;
     private final JwtUtil jwtUtil;
+    private final CourseValidator courseValidator;
 
     public CourseService(CourseRepository courseRepository,
                          IdentityServiceClient identityServiceClient,
-                         AmqpTemplate rabbitTemplate, JwtUtil jwtUtil) {
+                         AmqpTemplate rabbitTemplate, JwtUtil jwtUtil,
+                         CourseValidator courseValidator) {
         this.courseRepository = courseRepository;
         this.identityServiceClient = identityServiceClient;
         this.rabbitTemplate = rabbitTemplate;
         this.jwtUtil = jwtUtil;
+        this.courseValidator = courseValidator;
     }
 
     protected Course findCourseById(UUID id) {
@@ -71,8 +73,8 @@ public class CourseService {
     @Transactional
     public UUID createCourse(CreateCourseRequest request, String token) {
 
-        validationCourseCategoriesSize(request.categories());
-        validateCategories(request.categories());
+        courseValidator.validationCourseCategoriesSize(request.categories());
+        courseValidator.validateCategories(request.categories());
 
         UUID instructorId = jwtUtil.getUserIdFromToken(token);
 
@@ -91,7 +93,6 @@ public class CourseService {
 
         courseRepository.save(course);
 
-
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, UPDATE_ROLE_ROUTING_KEY, instructorId);
 
         return course.getId();
@@ -101,15 +102,32 @@ public class CourseService {
     public void updateCourseByCourseId(UUID id, UpdateCourseRequest request, String token) {
         Course course = findCourseById(id);
 
-        validateInstructorItSelfOrAdmin(course, token);
+        courseValidator.validateInstructorItSelfOrAdmin(course, token);
 
-        UpdateCourseRequestConverter.updateEntity(request, course);
+        if (request.categories() != null && !request.categories().isEmpty()) {
+
+            courseValidator.validationCourseCategoriesSize(request.categories());
+            courseValidator.validateCategories(request.categories());
+
+            Set<Category> newCategories = request.categories()
+                    .stream()
+                    .map(CategoryDTOConverter::toEntity)
+                    .collect(Collectors.toSet());
+
+            course.getCategories().clear();
+            course.getCategories().addAll(newCategories);
+        }
+
+        if (request.title() != null) course.setTitle(request.title());
+        if (request.description() != null) course.setDescription(request.description());
+        if (request.price() != null) course.setPrice(request.price());
+        if (request.isPublished() != null) course.setPublished(request.isPublished());
     }
 
     public void deleteCourseById(UUID courseId, String token) {
         Course course = findCourseById(courseId);
 
-        validateInstructorItSelfOrAdmin(course, token);
+        courseValidator.validateInstructorItSelfOrAdmin(course, token);
 
         courseRepository.deleteById(courseId);
     }

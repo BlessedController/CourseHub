@@ -46,7 +46,6 @@ public class Course {
     )
     private List<Video> courseVideos = new ArrayList<>();
 
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
