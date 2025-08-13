@@ -40,22 +40,17 @@ public class Course {
 
     @OneToMany(
             mappedBy = "course",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+            fetch = FetchType.LAZY
     )
     private List<Video> courseVideos = new ArrayList<>();
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    @OneToMany(
+            mappedBy = "course",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+            fetch = FetchType.LAZY
+    )
+    private List<Enrollment> enrollments = new ArrayList<>();
 
 
     public Course() {
@@ -69,6 +64,17 @@ public class Course {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    @PrePersist
+    private void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public String getTitle() {
@@ -133,6 +139,14 @@ public class Course {
 
     public void setCourseVideos(List<Video> courseVideos) {
         this.courseVideos = courseVideos;
+    }
+
+    public List<Enrollment> getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(List<Enrollment> enrollments) {
+        this.enrollments = enrollments;
     }
 
     //endregion
