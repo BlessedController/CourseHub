@@ -15,7 +15,7 @@ import java.util.UUID;
 @Service
 public class EnrollmentService {
 
-    private static final Logger logger = LoggerFactory.getLogger(EnrollmentService.class);
+    private static final Logger log = LoggerFactory.getLogger(EnrollmentService.class);
     private final EnrollmentRepository enrollmentRepository;
     private final JwtUtil jwtUtil;
     private final PaymentServiceClient paymentServiceClient;
@@ -41,7 +41,7 @@ public class EnrollmentService {
         if (Boolean.TRUE.equals(isPaid)) {
             UUID userId = jwtUtil.getUserIdFromToken(token);
 
-            boolean alreadyEnrolled = enrollmentRepository
+            Boolean alreadyEnrolled = enrollmentRepository
                     .existsByUserIdAndCourseId(userId, course.getId());
 
             if (alreadyEnrolled) {
