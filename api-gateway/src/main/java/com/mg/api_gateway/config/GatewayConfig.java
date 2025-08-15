@@ -39,6 +39,17 @@ public class GatewayConfig {
                                         .setFallbackUri(MEDIA_FALLBACK)))
                         .uri(MEDIA_LB_URI))
 
+                  .route(PAYMENT_ID, r -> r
+                        .path(PAYMENT_PATH)
+                        .filters(f -> f
+                                .circuitBreaker(c -> c
+                                        .setName(PAYMENT_CIRCUIT_BREAKER_NAME)
+                                        .setFallbackUri(PAYMENT_FALLBACK)))
+                        .uri(PAYMENT_LB_URI))
+
+
+
+
                 .build();
     }
 }

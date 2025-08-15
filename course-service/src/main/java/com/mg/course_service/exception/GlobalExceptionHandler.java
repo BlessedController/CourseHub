@@ -47,25 +47,26 @@ public class GlobalExceptionHandler {
                 exception.getMessage(),
                 request.getRequestURI());
 
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<?> UserNotFoundExceptionHandler(UserNotFoundException exception,
                                                           HttpServletRequest request) {
 
-        Map<String, Object> body = createErrorBody(HttpStatus.NOT_FOUND,
+        Map<String, Object> body = createErrorBody(
+                HttpStatus.NOT_FOUND,
                 "NotFound",
                 exception.getMessage(),
                 request.getRequestURI());
 
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
     @ExceptionHandler(VideoNotFoundException.class)
     public ResponseEntity<?> VideoNotFoundExceptionHandler(VideoNotFoundException exception) {
 
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
 
     }
 
@@ -100,7 +101,8 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+
     }
 
     @ExceptionHandler(CategoryMismatchException.class)
@@ -112,7 +114,7 @@ public class GlobalExceptionHandler {
                 exception.getMessage(),
                 request.getRequestURI()
         );
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler(AuthorIsNotTheOwnerOfTheCourseOrIsNotAdminException.class)
@@ -137,7 +139,7 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -150,12 +152,12 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(body);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> resourceNotFoundExceptionHandler(ResourceNotFoundException exception,
-                                                                    HttpServletRequest request) {
+                                                              HttpServletRequest request) {
         Map<String, Object> body = createErrorBody(
                 HttpStatus.NOT_FOUND,
                 "Media Not Found",
@@ -163,7 +165,20 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(CourseAlreadyEnrolledException.class)
+    public ResponseEntity<?> courseAlreadyEnrolledExceptionHandler(CourseAlreadyEnrolledException exception,
+                                                                   HttpServletRequest request) {
+        Map<String, Object> body = createErrorBody(
+                HttpStatus.CONFLICT,
+                "Already enrolled course",
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
 

@@ -1,6 +1,7 @@
 package com.mg.course_service.service;
 
 import com.mg.course_service.client.PaymentServiceClient;
+import com.mg.course_service.exception.CourseAlreadyEnrolledException;
 import com.mg.course_service.model.Course;
 import com.mg.course_service.model.Enrollment;
 import com.mg.course_service.repository.EnrollmentRepository;
@@ -28,26 +29,23 @@ public class EnrollmentService {
         this.paymentServiceClient = paymentServiceClient;
     }
 
+    //TODO: IMPROVE IT. WHAT IS SAGA DP?!
     @Transactional
     public void enrollCourse(Course course, String token) {
-        Boolean isPaid;
-        try {
-            isPaid = paymentServiceClient.pay().getBody();
-        } catch (Exception e) {
-            log.error("Payment service failed: {}", e.getMessage());
-            return;
+
+        UUID userId = jwtUtil.getUserIdFromToken(token);
+
+        boolean alreadyEnrolled = enrollmentRepository
+                .existsByUserIdAndCourseId(userId, course.getId());
+
+        if (alreadyEnrolled) {
+            log.info("User {} already enrolled in course {}", userId, course.getId());
+            throw new CourseAlreadyEnrolledException("You already enrolled the course by name: " + course.getTitle());
         }
 
+        Boolean isPaid = paymentServiceClient.pay().getBody();
+
         if (Boolean.TRUE.equals(isPaid)) {
-            UUID userId = jwtUtil.getUserIdFromToken(token);
-
-            Boolean alreadyEnrolled = enrollmentRepository
-                    .existsByUserIdAndCourseId(userId, course.getId());
-
-            if (alreadyEnrolled) {
-                log.info("User {} already enrolled in course {}", userId, course.getId());
-                return;
-            }
 
             Enrollment enrollment = new Enrollment.Builder()
                     .course(course)

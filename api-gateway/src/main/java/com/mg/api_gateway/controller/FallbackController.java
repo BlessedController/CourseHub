@@ -12,21 +12,28 @@ public class FallbackController {
     public ResponseEntity<String> identityFallback() {
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body("Service is currently unavailable. Please try again later.");
+                .body("Identity Service is currently unavailable. Please try again later.");
     }
 
     @RequestMapping("/course")
     public ResponseEntity<String> courseFallback() {
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body("Service is currently unavailable. Please try again later.");
+                .body("Course Service is currently unavailable. Please try again later.");
     }
 
     @RequestMapping("/media")
     public ResponseEntity<String> mediaFallback() {
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body("Service is currently unavailable. Please try again later.");
+                .body("Media Service is currently unavailable. Please try again later.");
+    }
+
+    @RequestMapping("/payment")
+    public ResponseEntity<String> paymentFallback() {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body("Payment Service is currently unavailable. Please try again later.");
     }
 
 
