@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:oracle:thin:@//localhost:1521/orclpdb1
-    username: COURSE_SERVICE_DB
+    username: COURSE_HUB_COURSE_SERVICE_DB
     password: dbhunter
     driver-class-name: oracle.jdbc.OracleDriver
   jpa:
