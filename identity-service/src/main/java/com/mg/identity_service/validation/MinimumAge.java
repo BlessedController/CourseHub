@@ -8,7 +8,6 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = MinimumAgeValidator.class)
-@Documented
 public @interface MinimumAge {
     String message() default "En az {value} yaşında olmalısınız";
     Class<?>[] groups() default {};
