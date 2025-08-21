@@ -21,22 +21,19 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final CourseService courseService;
     private final Logger logger = LoggerFactory.getLogger(VideoService.class);
-    private final CourseValidator courseValidator;
 
 
     public VideoService(VideoRepository videoRepository,
-                        CourseService courseService,
-                        CourseValidator courseValidator) {
+                        CourseService courseService) {
         this.videoRepository = videoRepository;
         this.courseService = courseService;
-        this.courseValidator = courseValidator;
     }
 
     @Transactional
     @RabbitListener(queues = ADD_VIDEO_QUEUE)
     public void addVideoToCourse(AddVideoToCourseRequest request) {
         Course course = courseService.findCourseById(request.courseId());
-        courseValidator.validateInstructorItSelfOrAdmin(course, request.token());
+        courseService.validateInstructorItSelfOrAdmin(course, request.token());
 
         Video video = new Video(request.filename(), request.displayName(), course);
         course.getCourseVideos().add(video);

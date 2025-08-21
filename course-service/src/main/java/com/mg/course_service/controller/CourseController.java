@@ -4,6 +4,7 @@ import com.mg.course_service.dto.request.course.CreateCourseRequest;
 import com.mg.course_service.dto.request.course.UpdateCourseRequest;
 import com.mg.course_service.dto.response.CourseResponse;
 import com.mg.course_service.service.CourseService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
@@ -28,23 +29,26 @@ public class CourseController {
 
     @PostMapping(CREATE_COURSE_URL)
     public ResponseEntity<UUID> createCourse(@Valid @RequestBody CreateCourseRequest request,
-                                             @RequestHeader("Authorization") String token) {
-        UUID id = courseService.createCourse(request, token);
+                                             HttpServletRequest httpRequest) {
+        UUID id = courseService.createCourse(request, httpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @PutMapping(UPDATE_COURSE_URL)
-    public ResponseEntity<Void> updateCourseByCourseId(@NotNull @PathVariable("courseId") UUID courseId,
-                                                       @Valid @RequestBody UpdateCourseRequest request,
-                                                       @RequestHeader("Authorization") String token) {
-        courseService.updateCourseByCourseId(courseId, request, token);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> updateCourse(@PathVariable UUID courseId,
+                                             @RequestBody UpdateCourseRequest request,
+                                             HttpServletRequest httpRequest) {
+
+        courseService.updateCourseByCourseId(courseId, request, httpRequest);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
 
     @DeleteMapping(DELETE_COURSE_URL)
     public ResponseEntity<Void> deleteCourseById(@NotNull @PathVariable("courseId") UUID courseId,
-                                                 @RequestHeader("Authorization") String token) {
-        courseService.deleteCourseById(courseId, token);
+                                                 HttpServletRequest httpRequest) {
+        courseService.deleteCourseById(courseId, httpRequest);
         return ResponseEntity.noContent().build();
     }
 
@@ -59,15 +63,15 @@ public class CourseController {
     }
 
     @GetMapping(AUTHOR_COURSES_URL)
-    public ResponseEntity<List<CourseResponse>> getUserCourses(@RequestHeader("Authorization") String token) {
-        List<CourseResponse> courses = courseService.getAuthorCourses(token);
+    public ResponseEntity<List<CourseResponse>> getUserCourses(HttpServletRequest httpRequest) {
+        List<CourseResponse> courses = courseService.getAuthorCourses(httpRequest);
         return ResponseEntity.ok(courses);
     }
 
     @GetMapping(VALIDATE_OWNER_URL)
     public ResponseEntity<Boolean> isUserOwnerOfCourse(@RequestParam UUID courseId,
-                                                       @RequestHeader("Authorization") String token) {
-        Boolean isOwner = courseService.isUserOwnerOfCourse(courseId, token);
+                                                       HttpServletRequest httpRequest) {
+        Boolean isOwner = courseService.isUserOwnerOfCourse(courseId, httpRequest);
         return ResponseEntity.ok(isOwner);
     }
 }

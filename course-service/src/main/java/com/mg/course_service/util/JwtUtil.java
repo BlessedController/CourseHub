@@ -73,7 +73,7 @@ public class JwtUtil {
         return username;
     }
 
-    public boolean isAdmin(String token) {
+    public Boolean isAdmin(String token) {
         Map<String, Object> claims = getClaimsFromToken(token);
 
         Object role = claims.get("scope");

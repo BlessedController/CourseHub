@@ -60,6 +60,17 @@ public class UserService {
 
     }
 
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean existsByUsername(String value) {
+        return userRepository.existsByUsername(value);
+    }
+    public boolean existsByPhoneNumber(String value) {
+        return userRepository.existsByPhoneNumber(value);
+    }
+
     public void createUser(CreateUserRequest request) {
         if (userRepository.existsByUsername(request.username())) {
             throw new DuplicateFieldException("Username is already taken.");
