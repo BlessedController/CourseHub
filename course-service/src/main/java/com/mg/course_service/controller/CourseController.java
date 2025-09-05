@@ -34,6 +34,8 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
+
+    //todo: buraya id ver servlet request yerine
     @PutMapping(UPDATE_COURSE_URL)
     public ResponseEntity<Void> updateCourse(@PathVariable UUID courseId,
                                              @RequestBody UpdateCourseRequest request,
@@ -43,7 +45,6 @@ public class CourseController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 
     @DeleteMapping(DELETE_COURSE_URL)
     public ResponseEntity<Void> deleteCourseById(@NotNull @PathVariable("courseId") UUID courseId,

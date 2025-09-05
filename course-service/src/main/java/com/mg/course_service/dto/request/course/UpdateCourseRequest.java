@@ -1,6 +1,7 @@
 package com.mg.course_service.dto.request.course;
 
 import com.mg.course_service.dto.CategoryDTO;
+import com.mg.course_service.validation.UniqueCourseTitle;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
@@ -11,6 +12,7 @@ public record UpdateCourseRequest(
         @Pattern(regexp = "^[^\\\\/:*?\"<>|]+$", message = "Title cannot contain special characters: \\ / : * ? \" < > |")
         @NotBlank(message = "Title cannot be blank")
         @Size(max = 150, message = "Title cannot exceed 150 characters")
+        @UniqueCourseTitle
         String title,
 
         @NotBlank(message = "Description cannot be blank")

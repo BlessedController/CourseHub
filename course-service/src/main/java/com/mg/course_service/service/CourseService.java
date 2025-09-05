@@ -15,6 +15,8 @@ import com.mg.course_service.mapper.VideoDTOConverter;
 import com.mg.course_service.model.Category;
 import com.mg.course_service.model.Course;
 import com.mg.course_service.repository.CourseRepository;
+import com.mg.course_service.security.JwtAuthFilter;
+import com.mg.course_service.security.UserPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static com.mg.course_service.config.RabbitMQConfig.EXCHANGE_NAME;
 import static com.mg.course_service.config.RabbitMQConfig.UPDATE_ROLE_ROUTING_KEY;
+import static com.mg.course_service.security.JwtAuthFilter.USER_ATTR;
 
 @Service
 public class CourseService {
@@ -46,10 +49,10 @@ public class CourseService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    protected void validateInstructorItSelfOrAdmin(Course course, HttpServletRequest httpRequest) {
-        UUID userId = (UUID) httpRequest.getAttribute("userId");
+    protected void validateInstructorItSelfOrAdmin(Course course, UserPrincipal userPrincipal) {
+        UUID userId = userPrincipal.userId();
         UUID instructorId = course.getInstructorId();
-        Boolean isAdmin = (Boolean) httpRequest.getAttribute("isAdmin");
+        Boolean isAdmin = userPrincipal.isAdmin();
 
         if (isAdmin != null && !isAdmin && !Objects.equals(userId, instructorId)) {
             throw new AuthorIsNotTheOwnerOfTheCourseOrIsNotAdminException(
@@ -57,13 +60,6 @@ public class CourseService {
             );
         }
     }
-
-    protected void validateInstructorItSelfOrAdmin(Course course, String token) {
-        throw new AuthorIsNotTheOwnerOfTheCourseOrIsNotAdminException(
-                "You are neither the course owner nor an admin"
-        );
-    }
-
 
     protected void validationCourseCategoriesSize(List<CategoryDTO> categoryDTOs) {
         if (categoryDTOs.size() > MAX_CATEGORIES) {
@@ -132,7 +128,8 @@ public class CourseService {
         validationCourseCategoriesSize(request.categories());
         validateCategories(request.categories());
 
-        UUID instructorId = (UUID) httpRequest.getAttribute("userId");
+        UserPrincipal principal = (UserPrincipal) httpRequest.getAttribute(USER_ATTR);
+        UUID instructorId = principal.userId();
 
         Course course = new Course.Builder()
                 .title(request.title())
@@ -157,13 +154,13 @@ public class CourseService {
     public void updateCourseByCourseId(UUID courseId, UpdateCourseRequest request, HttpServletRequest httpRequest) {
         Course course = findCourseById(courseId);
 
-        UUID userId = (UUID) httpRequest.getAttribute("userId");
+        UserPrincipal user = (UserPrincipal) httpRequest.getAttribute(JwtAuthFilter.USER_ATTR);
 
-        if (userId == null) {
+        if (user == null) {
             throw new AuthorIsNotTheOwnerOfTheCourseOrIsNotAdminException("You are not allowed to update this course");
         }
 
-        validateInstructorItSelfOrAdmin(course, httpRequest);
+        validateInstructorItSelfOrAdmin(course, user);
         validationCourseCategoriesSize(request.categories());
         validateCategories(request.categories());
 
@@ -185,7 +182,9 @@ public class CourseService {
     public void deleteCourseById(UUID courseId, HttpServletRequest httpRequest) {
         Course course = findCourseById(courseId);
 
-        validateInstructorItSelfOrAdmin(course, httpRequest);
+        UserPrincipal userPrincipal = (UserPrincipal) httpRequest.getAttribute(JwtAuthFilter.USER_ATTR);
+
+        validateInstructorItSelfOrAdmin(course, userPrincipal);
 
         courseRepository.deleteById(courseId);
     }
@@ -228,5 +227,9 @@ public class CourseService {
         Boolean isAdmin = (Boolean) httpRequest.getAttribute("isAdmin");
 
         return Boolean.TRUE.equals(isAdmin) || Objects.equals(userId, instructorId);
+    }
+
+    public boolean existsByTitle(String title) {
+        return courseRepository.existsByTitle(title);
     }
 }

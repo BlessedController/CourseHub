@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface CourseRepository extends JpaRepository<Course, UUID> {
 
     Optional<List<Course>> getCoursesByInstructorId(UUID instructorId);
+
+    boolean existsByTitle(String title);
 }

@@ -5,7 +5,7 @@ import com.mg.course_service.exception.CourseAlreadyEnrolledException;
 import com.mg.course_service.model.Course;
 import com.mg.course_service.model.Enrollment;
 import com.mg.course_service.repository.EnrollmentRepository;
-import com.mg.course_service.util.JwtUtil;
+import com.mg.course_service.security.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

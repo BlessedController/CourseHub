@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/CourseHub.iml" filepath="$PROJECT_DIR$/.idea/CourseHub.iml" />
-      <module fileurl="file://$PROJECT_DIR$/course-service/course-service.iml" filepath="$PROJECT_DIR$/course-service/course-service.iml" />
-      <module fileurl="file://$PROJECT_DIR$/identity-service/identity-service.iml" filepath="$PROJECT_DIR$/identity-service/identity-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/media-stock-service/media-stock-service.iml" filepath="$PROJECT_DIR$/media-stock-service/media-stock-service.iml" />
     </modules>
   </component>
